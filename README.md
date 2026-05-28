@@ -2,7 +2,7 @@
 
 A collection of my reusable UI templates and frontend architecture setups built with modern web stacks.
 
-This repository acts as a personal starter kit for rapidly bootstrapping projects with consistent structure, scalable API layers, reusable components, and clean separation between client/server concerns.
+This repository serves as a reusable starter system for quickly bootstrapping projects with scalable structured folder structures, centralized API handling, reusable components, clean client/server separation, and maintainable frontend architecture patterns.
 
 ## Includes
 
@@ -32,6 +32,24 @@ Example:
 
 ```txt
 nextTs-no-protected-routes
+```
+
+## Using a Template
+
+Clone a specific template branch directly into a new project using degit:
+
+```npx degit YOUR_USERNAME/UITemplates#branch-name my-app```
+
+Example:
+
+```npx degit YOUR_USERNAME/UITemplates#nextTs-no-protected-routes my-app```
+
+Then start the project:
+
+```
+cd my-app
+npm install
+npm run dev
 ```
 
 ## Tech Stack
