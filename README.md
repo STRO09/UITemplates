@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js Starter Template
 
-## Getting Started
+> A minimal, production-ready Next.js starter using the App Router and JavaScript — lightweight, scalable, and ready for customization.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js with the App Router (`app/`) and `page.js`-based routing
+- Clean JavaScript architecture without TypeScript overhead
+- Example API layer split into `client/` and `server/` helpers
+- Centralized endpoint management
+- Reusable layouts and UI components
+- Custom hooks and shared utilities
+- Role/context-based structure support
+- Global styling with PostCSS support
+
+## Prerequisites
+
+- Node.js 18+ (recommended)
+- npm or yarn
+
+## Quick Start
+
+1. Install dependencies
+
+```powershell
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run development server
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```powershell
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Build for production
 
-## Learn More
+```powershell
+npm run build
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Folder Overview
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `app/` — Next.js App Router pages, layouts, and global styles
+- `components/` — Shared UI components, layouts, dialogs, and sidebars
+- `hooks/` — Reusable React hooks
+- `api/` — API helpers separated into:
+  - `client/`
+  - `server/`
+  - `endpoints/`
+- `lib/` — Shared utilities, contexts, and helper functions
+- `public/` — Static assets
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## API Architecture
 
-## Deploy on Vercel
+The template includes a separated API structure for cleaner frontend architecture.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Client-side APIs
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Used for:
+- forms
+- button actions
+- browser interactions
+- mutations
+
+Example:
+
+```js
+userClientApi.getAll();
+userClientApi.create(payload);
+```
+
+### Server-side APIs
+
+Used for:
+- Server Components
+- SSR data fetching
+- protected layouts
+- Server Actions
+
+Example:
+
+```js
+await userServerApi.getAll();
+```
+
+### Middleware Layer
+
+Includes:
+- `clientMiddleware.js`
+- `serverMiddleware.js`
+
+Features:
+- centralized fetch handling
+- cookie forwarding
+- standardized error responses
+- SSR-safe authentication
+- caching and deduplication support
+
+## Styling
+
+Global styles live in:
+
+```txt
+app/globals.css
+```
+
+The template also includes PostCSS configuration for Tailwind CSS or additional plugins.
+
+## Customization Tips
+
+- Replace the placeholder dashboard layouts with your own app structure
+- Extend the API layer with domain-specific services
+- Add authentication providers or protected route handling
+- Create reusable UI patterns inside `components/ui`
+- Add `.env.local` for runtime configuration
+
+## Goals
+
+This template focuses on:
+- scalable frontend structure
+- reusable architecture patterns
+- clean separation of concerns
+- rapid project bootstrapping
+- maintainable code organization
+
+## License
+
+MIT
