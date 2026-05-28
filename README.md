@@ -33,6 +33,9 @@ Example:
 ```txt
 nextTs-no-protected-routes
 ```
+```txt
+nextJs-no-protected-routes
+```
 
 ## Using a Template
 
