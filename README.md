@@ -38,11 +38,11 @@ nextTs-no-protected-routes
 
 Clone a specific template branch directly into a new project using degit:
 
-```npx degit YOUR_USERNAME/UITemplates#branch-name my-app```
+```npx degit STRO09/UITemplates#branch-name my-app```
 
 Example:
 
-```npx degit YOUR_USERNAME/UITemplates#nextTs-no-protected-routes my-app```
+```npx degit STRO09/UITemplates#nextTs-no-protected-routes my-app```
 
 Then start the project:
 
