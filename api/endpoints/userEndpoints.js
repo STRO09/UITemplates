@@ -6,14 +6,14 @@ export const USER_ENDPOINTS = {
     list: '/users',
 
     /** GET /users/:id */
-    getById: (id: string) => `/users/${id}`,
+    getById: (id) => `/users/${id}`,
 
     /** POST /users */
     create: '/users',
 
     /** PUT /users/:id */
-    update: (id: string) => `/users/${id}`,
+    update: (id) => `/users/${id}`,
 
     /** DELETE /users/:id */
-    delete: (id: string) => `/users/${id}`,
+    delete: (id) => `/users/${id}`,
 };
