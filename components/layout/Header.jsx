@@ -1,5 +1,7 @@
 // import { Button } from '@/components/ui/button';
-import { Bell } from 'lucide-react';
+import { Bell } from "lucide-react";
+import { ThemeToggle } from "../common/ThemeToggle";
+import { ThemeSelector } from "../common/ThemeSelector";
 
 export function Header() {
   return (
@@ -9,9 +11,9 @@ export function Header() {
           <h2 className="text-xl font-semibold">Procurement Platform</h2>
         </div>
         <div className="flex items-center gap-4">
-          {/* <Button variant="ghost" size="icon"> */}
+          <ThemeSelector />
+          <ThemeToggle />
           <Bell className="w-5 h-5" />
-          {/* </Button> */}
         </div>
       </div>
     </header>

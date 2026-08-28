@@ -13,13 +13,13 @@
    ---------------------------------------------------------
    This is the visual foundation of the entire application.
 
-   IMPORTANT:
-   These variables describe PURPOSE, not individual components.
+   These variables describe PURPOSE, not individual
+   components.
 
    Good:
      --primary
      --background
-     --muted
+     --muted-foreground
      --destructive
 
    Avoid:
@@ -35,28 +35,32 @@
   --primary: #3368A0;
   --secondary: #66A3BF;
 
+
   /* ---------- Surfaces ---------- */
 
   --background: #F2EFE7;
   --surface: #C8DFDB;
+
 
   /* ---------- Text ---------- */
 
   --foreground: #17202A;
   --muted-foreground: #53616B;
 
+
   /* ---------- UI ---------- */
 
   --border: #B8CECB;
+
 
   /* ---------- Semantic States ----------
      These are NOT brand colors.
 
      They communicate meaning:
-       success  → operation completed
-       warning  → something needs attention
-       destructive → dangerous / irreversible action
-       info     → informational state
+       success      → operation completed
+       warning      → something needs attention
+       destructive  → dangerous / irreversible action
+       info         → informational state
   */
 
   --success: #2E7D5B;
@@ -73,30 +77,29 @@
      A marketing/landing page can introduce a distinctive
      display font separately if needed.
 
-     Example:
-       --font-sans     → application/UI/body
-       --font-display  → marketing/hero headings
-       --font-mono     → code / technical information
+     These are application-level variables. They are given
+     unique names so they don't conflict with Tailwind's
+     own generated font variables.
      ======================================================= */
 
-  --font-sans: var(--font-geist-sans);
-  --font-display: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --app-font-body: var(--font-geist-sans);
+  --app-font-display: var(--font-geist-sans);
+  --app-font-code: var(--font-geist-mono);
 
 
   /* =======================================================
      SHAPE
      -------------------------------------------------------
-     Define your overall "roundness" once.
+     Define the overall "roundness" of the application once.
 
-     Components can still override this when necessary,
-     but most of the application should feel consistent.
+     Components can override these when necessary, but
+     most of the application should feel consistent.
      ======================================================= */
 
-  --radius-sm: 0.375rem;
-  --radius-md: 0.625rem;
-  --radius-lg: 0.875rem;
-  --radius-xl: 1.25rem;
+  --app-radius-sm: 0.375rem;
+  --app-radius-md: 0.625rem;
+  --app-radius-lg: 0.875rem;
+  --app-radius-xl: 1.25rem;
 
 
   /* =======================================================
@@ -118,18 +121,23 @@
    ---------------------------------------------------------
    Maps our design tokens into Tailwind utilities.
 
-   This is what allows things like:
+   This allows things like:
 
        bg-primary
        text-foreground
        bg-background
        border-border
        text-muted-foreground
+       font-display
+       rounded-md
 
    instead of repeatedly writing arbitrary values such as:
 
        bg-[#3368A0]
        text-[#17202A]
+
+   The Tailwind variables intentionally have different names
+   from the application variables above to avoid self-reference.
    ========================================================= */
 
 @theme inline {
@@ -155,21 +163,21 @@
 
   /* ---------- Fonts ---------- */
 
-  --font-sans: var(--font-sans);
-  --font-display: var(--font-display);
-  --font-mono: var(--font-mono);
+  --font-sans: var(--app-font-body);
+  --font-display: var(--app-font-display);
+  --font-mono: var(--app-font-code);
 
 
   /* ---------- Radius ---------- */
 
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
+  --radius-sm: var(--app-radius-sm);
+  --radius-md: var(--app-radius-md);
+  --radius-lg: var(--app-radius-lg);
+  --radius-xl: var(--app-radius-xl);
 
 
   /* ---------- Animations ----------
-     Define reusable global animations here if needed.
+     Reusable animations can be exposed as Tailwind utilities.
   */
 
   --animate-fade-in: fade-in var(--duration-normal) ease-out;
@@ -179,11 +187,13 @@
 /* =========================================================
    4. DARK MODE
    ---------------------------------------------------------
-   We change the VALUES of semantic tokens rather than
-   changing individual components.
+   next-themes adds the "dark" class to <html>.
 
-   Components don't need to know whether they're in
-   light or dark mode.
+   Because <html> is also :root, we override the semantic
+   variables directly here.
+
+   Components don't need to know whether they're in light
+   or dark mode.
 
    They simply use:
 
@@ -191,42 +201,43 @@
        text-foreground
        bg-primary
 
-   and the theme determines the actual color.
+   and the active theme determines the actual color.
    ========================================================= */
 
-@media (prefers-color-scheme: dark) {
+.dark {
 
-  :root {
+  /* ---------- Surfaces ---------- */
 
-    /* ---------- Surfaces ---------- */
+  --background: #101A22;
+  --surface: #1A2B35;
 
-    --background: #101A22;
-    --surface: #1A2B35;
 
-    /* ---------- Text ---------- */
+  /* ---------- Text ---------- */
 
-    --foreground: #EEF4F3;
-    --muted-foreground: #A9BCBF;
+  --foreground: #EEF4F3;
+  --muted-foreground: #A9BCBF;
 
-    /* ---------- Brand ---------- */
 
-    --primary: #6FA8D1;
-    --secondary: #78B7C9;
+  /* ---------- Brand ---------- */
 
-    /* ---------- UI ---------- */
+  --primary: #6FA8D1;
+  --secondary: #78B7C9;
 
-    --border: #30434C;
 
-    /* ---------- Semantic States ----------
-       Dark mode versions should remain readable
-       against dark surfaces.
-    */
+  /* ---------- UI ---------- */
 
-    --success: #63B58B;
-    --warning: #E0A04A;
-    --destructive: #E47777;
-    --info: #6FAAC8;
-  }
+  --border: #30434C;
+
+
+  /* ---------- Semantic States ----------
+     Dark mode versions should remain readable against
+     dark surfaces.
+  */
+
+  --success: #63B58B;
+  --warning: #E0A04A;
+  --destructive: #E47777;
+  --info: #6FAAC8;
 }
 
 
@@ -246,10 +257,9 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--app-font-body);
 
-  font-family: var(--font-sans);
-
-  /* Prevent weird horizontal overflow from animations,
+  /* Prevent unwanted horizontal overflow from animations,
      wide elements, etc. */
   overflow-x: hidden;
 }
@@ -258,10 +268,10 @@ body {
 /* =========================================================
    6. GLOBAL TYPOGRAPHY
    ---------------------------------------------------------
-   Only establish sensible defaults here.
+   Establish sensible defaults for semantic HTML elements.
 
-   Individual components/pages can still choose their
-   own Tailwind typography classes.
+   Individual components can still override typography using
+   Tailwind classes.
    ========================================================= */
 
 h1,
@@ -271,7 +281,7 @@ h4,
 h5,
 h6 {
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: var(--app-font-body);
 }
 
 p {
@@ -309,10 +319,10 @@ p {
 
    If something only exists because one component needs it,
    it probably does NOT belong here.
-   ========================================================= */
 
-/* Example:
+   Example:
+
    .text-balance {
      text-wrap: balance;
    }
-*/
+   ========================================================= */

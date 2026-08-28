@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { CompanySidebar } from './CompanySidebar';
-import { Header } from './Header';
+import { CompanySidebar } from "./CompanySidebar";
+import { Header } from "./Header";
 
 /**
  * Company portal layout.
@@ -19,14 +19,11 @@ import { Header } from './Header';
  * - bidder portals
  * - procurement management systems
  */
-export function CompanyPortalLayout({
-  children,
-}) {
+export function CompanyPortalLayout({ children }) {
   /**
    * Sidebar expanded/collapsed state.
    */
-  const [isOpen, setIsOpen] =
-    useState(true);
+  const [isOpen, setIsOpen] = useState(true);
 
   /**
    * Toggle sidebar visibility.
@@ -38,10 +35,7 @@ export function CompanyPortalLayout({
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <CompanySidebar
-        isOpen={isOpen}
-        onToggle={toggleSidebar}
-      />
+      <CompanySidebar isOpen={isOpen} onToggle={toggleSidebar} />
 
       {/* Main content */}
       <div className="flex flex-col flex-1">
@@ -52,9 +46,7 @@ export function CompanyPortalLayout({
              * Match content offset
              * with sidebar width.
              */
-            marginLeft: isOpen
-              ? '240px'
-              : '60px',
+            marginLeft: isOpen ? "240px" : "60px",
           }}
         >
           {/* Shared portal header */}
