@@ -5,6 +5,8 @@ export const PRODUCT_ENDPOINTS = {
     /** GET /products */
     list: '/products',
 
+    listPaginated: '/products/paginated',
+
     /** GET /users/:id */
     getById: (id) => `/products/${id}`,
 

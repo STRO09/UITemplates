@@ -45,7 +45,7 @@ import { cache } from 'react';
 /**
  * Base backend URL used for server-side requests.
  */
-const BASE_URL = process.env.SERVER_BASE_URL ?? '';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 
 /**
  * Low-level server-side fetch wrapper.
