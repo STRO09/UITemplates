@@ -78,7 +78,7 @@ Both are valid.
 The question is whether changing the page should be treated as navigation or merely an interaction inside the current page.
 
 
-and the structure for client side pages can directly be kanbannboard/page.jsx
+and the structure for client side pages can directly be kanbanboard/page.jsx
 use CSR for pages that wont benefit from any pre rendered content from server like a blank canvas, calendar loading with its events loaded afterwards, etc.
 
 Static Site Generation

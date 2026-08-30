@@ -18,9 +18,10 @@ export const productClientApi = {
    */
   getAll: () => apiClient.get(PRODUCT_ENDPOINTS.list),
 
-  getAllPaginated: ({ page = 1, limit = 10 } = {}) =>
+  getAllPaginated: ({ page = 1, limit = 10, search } = {}) =>
     apiClient.get(
-      `${PRODUCT_ENDPOINTS.listPaginated}?page=${page}&limit=${limit}`,
+      `${PRODUCT_ENDPOINTS.listPaginated}?page=${page}&limit=${limit}`+
+      (search ? `&search=${search}` : ''),
     ),
 
   /**
