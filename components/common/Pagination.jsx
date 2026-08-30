@@ -30,21 +30,14 @@ export function Pagination({
 
   ...props
 }) {
-  if (
-    !hasNextPage &&
-    !hasPreviousPage &&
-    (!totalPages || totalPages <= 1)
-  ) {
+  if (!hasNextPage && !hasPreviousPage && (!totalPages || totalPages <= 1)) {
     return null;
   }
 
   return (
     <nav
       aria-label="Pagination"
-      className={cn(
-        "flex items-center justify-between gap-4",
-        className,
-      )}
+      className={cn("flex items-center justify-between gap-4", className)}
       {...props}
     >
       {previousHref ? (
@@ -57,7 +50,7 @@ export function Pagination({
         </PaginationLink>
       ) : (
         <PaginationButton
-          onClick={onPrevious}
+          onClick={() => onPageChange?.(currentPage - 1)}
           disabled={!hasPreviousPage}
           direction="previous"
         >
@@ -82,7 +75,7 @@ export function Pagination({
         </PaginationLink>
       ) : (
         <PaginationButton
-          onClick={onNext}
+          onClick={() => onPageChange?.(currentPage + 1)}
           disabled={!hasNextPage}
           direction="next"
         >
@@ -96,16 +89,8 @@ export function Pagination({
 /**
  * Pagination link for URL-based navigation.
  */
-function PaginationLink({
-  href,
-  disabled,
-  direction,
-  children,
-}) {
-  const Icon =
-    direction === "previous"
-      ? ChevronLeft
-      : ChevronRight;
+function PaginationLink({ href, disabled, direction, children }) {
+  const Icon = direction === "previous" ? ChevronLeft : ChevronRight;
 
   return (
     <Link
@@ -123,15 +108,11 @@ function PaginationLink({
         "aria-disabled:pointer-events-none aria-disabled:opacity-50",
       )}
     >
-      {direction === "previous" && (
-        <Icon className="h-4 w-4" />
-      )}
+      {direction === "previous" && <Icon className="h-4 w-4" />}
 
       {children}
 
-      {direction === "next" && (
-        <Icon className="h-4 w-4" />
-      )}
+      {direction === "next" && <Icon className="h-4 w-4" />}
     </Link>
   );
 }
@@ -139,16 +120,8 @@ function PaginationLink({
 /**
  * Pagination button for state-based navigation.
  */
-function PaginationButton({
-  onClick,
-  disabled,
-  direction,
-  children,
-}) {
-  const Icon =
-    direction === "previous"
-      ? ChevronLeft
-      : ChevronRight;
+function PaginationButton({ onClick, disabled, direction, children }) {
+  const Icon = direction === "previous" ? ChevronLeft : ChevronRight;
 
   return (
     <button
@@ -161,15 +134,11 @@ function PaginationButton({
         "disabled:pointer-events-none disabled:opacity-50",
       )}
     >
-      {direction === "previous" && (
-        <Icon className="h-4 w-4" />
-      )}
+      {direction === "previous" && <Icon className="h-4 w-4" />}
 
       {children}
 
-      {direction === "next" && (
-        <Icon className="h-4 w-4" />
-      )}
+      {direction === "next" && <Icon className="h-4 w-4" />}
     </button>
   );
 }
@@ -188,18 +157,10 @@ function PaginationPages({
     return null;
   }
 
-  const pages = getVisiblePages(
-    currentPage,
-    totalPages,
-  );
+  const pages = getVisiblePages(currentPage, totalPages);
 
   return (
-    <div
-      className={cn(
-        "flex items-center gap-1",
-        className,
-      )}
-    >
+    <div className={cn("flex items-center gap-1", className)}>
       {pages.map((page, index) =>
         page === "ellipsis" ? (
           <span
@@ -213,9 +174,7 @@ function PaginationPages({
           <Link
             key={page}
             href={getPageHref(page)}
-            aria-current={
-              page === currentPage ? "page" : undefined
-            }
+            aria-current={page === currentPage ? "page" : undefined}
             className={cn(
               "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm transition-colors",
               page === currentPage
@@ -230,9 +189,7 @@ function PaginationPages({
             key={page}
             type="button"
             onClick={() => onPageChange?.(page)}
-            aria-current={
-              page === currentPage ? "page" : undefined
-            }
+            aria-current={page === currentPage ? "page" : undefined}
             className={cn(
               "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm transition-colors",
               page === currentPage
@@ -250,22 +207,11 @@ function PaginationPages({
 
 function getVisiblePages(currentPage, totalPages) {
   if (totalPages <= 7) {
-    return Array.from(
-      { length: totalPages },
-      (_, index) => index + 1,
-    );
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
   }
 
   if (currentPage <= 4) {
-    return [
-      1,
-      2,
-      3,
-      4,
-      5,
-      "ellipsis",
-      totalPages,
-    ];
+    return [1, 2, 3, 4, 5, "ellipsis", totalPages];
   }
 
   if (currentPage >= totalPages - 3) {
