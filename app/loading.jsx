@@ -2,7 +2,7 @@
  * Route Loading UI
  *
  * Shown automatically while the route segment is loading.
-**/
+ **/
 
 export default function Loading() {
   return (
