@@ -28,9 +28,8 @@ export const productServerApi = {
   getAll: () => cachedGet(PRODUCT_ENDPOINTS.list, ["products"]),
 
   getAllPaginated: ({ page = 1, limit = 10 } = {}) =>
-    cachedGet(
+    apiServer.get(
       `${PRODUCT_ENDPOINTS.listPaginated}?page=${page}&limit=${limit}`,
-      ["products"],
     ),
 
   /**

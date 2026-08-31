@@ -39,13 +39,19 @@
  * -------------------------------------------------------
  */
 
-import { cookies, headers } from 'next/headers';
-import { cache } from 'react';
+import { cookies, headers } from "next/headers";
+import { cache } from "react";
+
+import {
+  withRetry,
+  isRetryableMethod,
+  isRetryableStatus,
+} from "../utils/retry";
 
 /**
  * Base backend URL used for server-side requests.
  */
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 /**
  * Low-level server-side fetch wrapper.
@@ -56,6 +62,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
  * - standardized error handling
  * - SSR-safe authenticated requests
  * - Next.js caching options
+ * - retry support
  *
  * @param {string} endpoint Backend API endpoint
  * @param {Object} options Request configuration
@@ -66,16 +73,16 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
  *   status: number
  * }>}
  */
-async function serverFetch(
-  endpoint,
-  options = {}
-) {
+async function serverFetch(endpoint, options = {}) {
   const {
-    method = 'GET',
+    method = "GET",
     body,
     headers: extraHeaders = {},
     tags,
     revalidate,
+
+    retries,
+    retryDelay,
   } = options;
 
   /**
@@ -97,8 +104,7 @@ async function serverFetch(
   /**
    * Preserve original client IP.
    */
-  const forwardedFor =
-    headerStore.get('x-forwarded-for') ?? '';
+  const forwardedFor = headerStore.get("x-forwarded-for") ?? "";
 
   /**
    * Standardized fetch configuration.
@@ -107,16 +113,14 @@ async function serverFetch(
     method,
 
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
 
       /**
        * Forward browser cookies to backend.
        */
       Cookie: sessionCookie,
 
-      ...(forwardedFor
-        ? { 'x-forwarded-for': forwardedFor }
-        : {}),
+      ...(forwardedFor ? { "x-forwarded-for": forwardedFor } : {}),
 
       ...extraHeaders,
     },
@@ -124,42 +128,41 @@ async function serverFetch(
     /**
      * Serialize request body if provided.
      */
-    ...(body
-      ? { body: JSON.stringify(body) }
-      : {}),
+    ...(body ? { body: JSON.stringify(body) } : {}),
 
     /**
      * Next.js extended fetch options.
      */
     next: {
       ...(tags ? { tags } : {}),
-      ...(revalidate !== undefined
-        ? { revalidate }
-        : {}),
+      ...(revalidate !== undefined ? { revalidate } : {}),
     },
   };
 
+  const canRetry = isRetryableMethod(method);
+
   try {
-    const res = await fetch(
-      `${BASE_URL}${endpoint}`,
-      config
-    );
+    const fetchOperation = () => fetch(`${BASE_URL}${endpoint}`, config);
+
+    const res = canRetry
+      ? await withRetry(fetchOperation, {
+          retries,
+          retryDelay,
+          shouldRetry: (res) => isRetryableStatus(res.status),
+        })
+      : await fetchOperation();
 
     /**
      * Detect whether response is JSON.
      */
-    const contentType =
-      res.headers.get('content-type');
+    const contentType = res.headers.get("content-type");
 
-    const isJson =
-      contentType?.includes('application/json');
+    const isJson = contentType?.includes("application/json");
 
     /**
      * Safely parse response payload.
      */
-    const payload = isJson
-      ? await res.json()
-      : await res.text();
+    const payload = isJson ? await res.json() : await res.text();
 
     /**
      * Normalize failed responses.
@@ -189,10 +192,7 @@ async function serverFetch(
     /**
      * Handle network-level failures.
      */
-    const message =
-      err instanceof Error
-        ? err.message
-        : 'Network error';
+    const message = err instanceof Error ? err.message : "Network error";
 
     return {
       data: null,
@@ -208,12 +208,11 @@ async function serverFetch(
  * Deduplicates identical GET requests
  * during the same render cycle.
  */
-export const cachedGet = cache(
-  (endpoint, tags) =>
-    serverFetch(endpoint, {
-      method: 'GET',
-      tags,
-    })
+export const cachedGet = cache((endpoint, tags) =>
+  serverFetch(endpoint, {
+    method: "GET",
+    tags,
+  }),
 );
 
 /**
@@ -225,7 +224,7 @@ export const apiServer = {
    */
   get: (endpoint, options) =>
     serverFetch(endpoint, {
-      method: 'GET',
+      method: "GET",
       ...options,
     }),
 
@@ -234,7 +233,7 @@ export const apiServer = {
    */
   post: (endpoint, body, options) =>
     serverFetch(endpoint, {
-      method: 'POST',
+      method: "POST",
       body,
       ...options,
     }),
@@ -244,7 +243,7 @@ export const apiServer = {
    */
   put: (endpoint, body, options) =>
     serverFetch(endpoint, {
-      method: 'PUT',
+      method: "PUT",
       body,
       ...options,
     }),
@@ -254,7 +253,7 @@ export const apiServer = {
    */
   patch: (endpoint, body, options) =>
     serverFetch(endpoint, {
-      method: 'PATCH',
+      method: "PATCH",
       body,
       ...options,
     }),
@@ -264,7 +263,7 @@ export const apiServer = {
    */
   delete: (endpoint, options) =>
     serverFetch(endpoint, {
-      method: 'DELETE',
+      method: "DELETE",
       ...options,
     }),
 };

@@ -30,11 +30,16 @@
  * -------------------------------------------------------
  */
 
+import {
+  withRetry,
+  isRetryableMethod,
+  isRetryableStatus,
+} from "../utils/retry";
+
 /**
  * Public backend API URL exposed to browser.
  */
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? '';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 /**
  * Low-level browser-side fetch wrapper.
@@ -44,6 +49,7 @@ const BASE_URL =
  * - credential forwarding
  * - standardized error handling
  * - safe non-JSON parsing
+ * - retry support
  *
  * @param {string} endpoint Backend API endpoint
  * @param {Object} options Request configuration
@@ -54,14 +60,14 @@ const BASE_URL =
  *   status: number
  * }>}
  */
-async function clientFetch(
-  endpoint,
-  options = {}
-) {
+async function clientFetch(endpoint, options = {}) {
   const {
-    method = 'GET',
+    method = "GET",
     body,
     headers = {},
+
+    retries,
+    retryDelay,
   } = options;
 
   /**
@@ -73,42 +79,44 @@ async function clientFetch(
     /**
      * Include browser cookies in requests.
      */
-    credentials: 'include',
+    credentials: "include",
 
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...headers,
     },
 
     /**
      * Serialize request payload if provided.
      */
-    ...(body
-      ? { body: JSON.stringify(body) }
-      : {}),
+    ...(body ? { body: JSON.stringify(body) } : {}),
   };
 
+  const canRetry = isRetryableMethod(method);
+
   try {
-    const res = await fetch(
-      `${BASE_URL}${endpoint}`,
-      config
-    );
+    const fetchOperation = () => fetch(`${BASE_URL}${endpoint}`, config);
+
+    const res = canRetry
+      ? await withRetry(fetchOperation, {
+          retries,
+          retryDelay,
+
+          shouldRetry: (response) => isRetryableStatus(response.status),
+        })
+      : await fetchOperation();
 
     /**
      * Detect whether response is JSON.
      */
-    const contentType =
-      res.headers.get('content-type');
+    const contentType = res.headers.get("content-type");
 
-    const isJson =
-      contentType?.includes('application/json');
+    const isJson = contentType?.includes("application/json");
 
     /**
      * Safely parse response payload.
      */
-    const payload = isJson
-      ? await res.json()
-      : await res.text();
+    const payload = isJson ? await res.json() : await res.text();
 
     /**
      * Normalize failed responses.
@@ -138,10 +146,7 @@ async function clientFetch(
     /**
      * Handle network-level failures.
      */
-    const message =
-      err instanceof Error
-        ? err.message
-        : 'Network error';
+    const message = err instanceof Error ? err.message : "Network error";
 
     return {
       data: null,
@@ -160,7 +165,7 @@ export const apiClient = {
    */
   get: (endpoint, headers) =>
     clientFetch(endpoint, {
-      method: 'GET',
+      method: "GET",
       headers,
     }),
 
@@ -169,7 +174,7 @@ export const apiClient = {
    */
   post: (endpoint, body, headers) =>
     clientFetch(endpoint, {
-      method: 'POST',
+      method: "POST",
       body,
       headers,
     }),
@@ -179,7 +184,7 @@ export const apiClient = {
    */
   put: (endpoint, body, headers) =>
     clientFetch(endpoint, {
-      method: 'PUT',
+      method: "PUT",
       body,
       headers,
     }),
@@ -189,7 +194,7 @@ export const apiClient = {
    */
   patch: (endpoint, body, headers) =>
     clientFetch(endpoint, {
-      method: 'PATCH',
+      method: "PATCH",
       body,
       headers,
     }),
@@ -199,7 +204,7 @@ export const apiClient = {
    */
   delete: (endpoint, headers) =>
     clientFetch(endpoint, {
-      method: 'DELETE',
+      method: "DELETE",
       headers,
     }),
 };
