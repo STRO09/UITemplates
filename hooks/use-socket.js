@@ -1,20 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import createSocket from "@/lib/socket/socket-client";
+import { useCallback, useContext } from "react";
+import { SocketContext } from "@/providers/socket-provider";
 
 /**
- * Manages a Socket.IO connection.
+ * Provides access to the Socket.IO connection managed by SocketProvider.
+ *
+ * Use `onEvent` to subscribe to events; the returned function removes the listener.
  */
-export function useSocket({ options = {}, autoConnect = true } = {}) {
-  const socketRef = useRef(null);
-  const [connected, setConnected] = useState(false);
+export function useSocket() {
+  const context = useContext(SocketContext);
 
-  if (!socketRef.current) {
-    socketRef.current = createSocket(options);
+  if (!context) {
+    throw new Error("useSocket must be used within a SocketProvider.");
   }
 
-  const socket = socketRef.current;
+  const { socket, connected } = context;
 
   const emit = useCallback(
     (event, ...args) => {
@@ -41,26 +42,6 @@ export function useSocket({ options = {}, autoConnect = true } = {}) {
     [socket],
   );
 
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleConnect = () => setConnected(true);
-    const handleDisconnect = () => setConnected(false);
-
-    socket.on("connect", handleConnect);
-    socket.on("disconnect", handleDisconnect);
-
-    if (autoConnect) {
-      socket.connect();
-    }
-
-    return () => {
-      socket.off("connect", handleConnect);
-      socket.off("disconnect", handleDisconnect);
-      socket.disconnect();
-    };
-  }, [socket, autoConnect]);
-
   return {
     socket,
     connected,
@@ -70,13 +51,12 @@ export function useSocket({ options = {}, autoConnect = true } = {}) {
   };
 }
 
-
-
-// USAGE ::: 
-// emit("message", message);
-
-// useEffect(() => {
-//   return onEvent("message", handleMessage);
-// }, [onEvent]);
-
-// offEvent("message", handleMessage);
+// Usage:
+// 1. Isolated socket:
+// <SocketProvider shared={false}>...</SocketProvider>
+//
+// 2. Shared socket:
+// <SocketProvider shared>...</SocketProvider>
+//
+// Components access the provider's socket through:
+// const { connected, emit, onEvent } = useSocket();
