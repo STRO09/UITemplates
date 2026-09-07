@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
-
 import { CompanySidebar } from "./CompanySidebar";
-import { Header } from "./Header";
+import { Sidebar } from "../common/sidebar/Sidebar";
+import { Header } from "../common/layout/Header";
+import { ThemeSelector } from "../common/ThemeSelector";
+import { ThemeToggle } from "../common/ThemeToggle";
+import { Bell } from "lucide-react";
 
 /**
  * Company portal layout.
@@ -33,28 +36,25 @@ export function CompanyPortalLayout({ children }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
-      <CompanySidebar isOpen={isOpen} onToggle={toggleSidebar} />
+    <div className="flex h-screen flex-col">
+      {/* Shared portal header */}
+      <Header
+        className="sticky top-0 z-40 border-b bg-card"
+        contentClassName="h-16 px-4 sm:px-6 lg:px-8"
+      >
+        <h2 className="text-xl font-semibold">Procurement Platform</h2>
 
-      {/* Main content */}
-      <div className="flex flex-col flex-1">
-        <main
-          className="min-h-screen transition-all duration-300"
-          style={{
-            /**
-             * Match content offset
-             * with sidebar width.
-             */
-            marginLeft: isOpen ? "240px" : "60px",
-          }}
-        >
-          {/* Shared portal header */}
-          <Header />
+        <div className="flex items-center gap-4">
+          <ThemeSelector />
+          <ThemeToggle />
+          <Bell className="h-5 w-5" />
+        </div>
+      </Header>
 
-          {/* Route/page content */}
-          {children}
-        </main>
+      <div className="flex min-h-0 flex-1">
+        <CompanySidebar />
+
+        <main className="min-w-0 flex-1 overflow-auto">{children}</main>
       </div>
     </div>
   );

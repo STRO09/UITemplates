@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { GovSidebar } from '@/components/layout/GovSidebar';
-import { Header } from './Header';
+import { Header } from '../common/layout/Header';
 
 /**
  * Government portal layout.
