@@ -23,7 +23,7 @@ export default function Home() {
   }, [tokyo.lng, tokyo.lat, zoom]);
   return (
     <CompanyPortalLayout>
-      <div ref={mapContainer} className="" />
+      <div ref={mapContainer} className="w-[90%] h-[90%] my-7 ms-15" />
     </CompanyPortalLayout>
   );
 }
