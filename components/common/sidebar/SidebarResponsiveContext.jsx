@@ -5,8 +5,18 @@ import { BREAKPOINTS } from "@/constants/breakpoints";
 
 const SidebarResponsiveContext = createContext("desktop");
 
+function getInitialMode() {
+  if (typeof window === "undefined") {
+    return "desktop";
+  }
+
+  return window.matchMedia(`(max-width: ${BREAKPOINTS.mobile - 1}px)`).matches
+    ? "mobile"
+    : "desktop";
+}
+
 export function SidebarResponsiveProvider({ children }) {
-  const [mode, setMode] = useState("desktop");
+  const [mode, setMode] = useState(getInitialMode);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(

@@ -30,6 +30,7 @@ export function SidebarItem({ item, className }) {
         className={cn(
           "flex items-center gap-3 px-3 py-2",
           navigationMode === "sidebar" && !sidebarOpen && "justify-center",
+          navigationMode === "popup" && "text-sm hover:bg-muted",
           className,
         )}
       >
@@ -48,14 +49,18 @@ export function SidebarItem({ item, className }) {
    */
   if (navigationMode === "popup") {
     return (
-      <SidebarPopup content={<SidebarSubmenu items={item.children} />}>
+      <SidebarPopup
+        content={<SidebarSubmenu items={item.children} mode="popup" />}
+      >
         <div
           className={cn(
-            "flex w-full items-center justify-between px-2 py-1.5",
+            "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-muted",
             className,
           )}
         >
-          <span className="truncate">{item.label}</span>
+          {Icon && <Icon className="h-4 w-4 shrink-0" />}
+
+          <span className="flex-1 truncate">{item.label}</span>
 
           <ChevronRight className="h-4 w-4 shrink-0" />
         </div>
@@ -70,7 +75,7 @@ export function SidebarItem({ item, className }) {
   if (!sidebarOpen) {
     return (
       <SidebarPopup
-        content={<SidebarSubmenu items={item.children} />}
+        content={<SidebarSubmenu items={item.children} mode="popup" />}
         className={className}
       >
         <div className="flex w-full items-center justify-center px-3 py-2">
@@ -105,7 +110,7 @@ export function SidebarItem({ item, className }) {
 
       {open && (
         <div className="ml-4">
-          <SidebarSubmenu items={item.children} />
+          <SidebarSubmenu items={item.children} mode="sidebar" />
         </div>
       )}
     </div>
