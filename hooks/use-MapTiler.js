@@ -10,6 +10,7 @@ export function useMapTiler({
   center,
   zoom,
   style = "streets-v4",
+  onStartLocationSelect,
   onDestinationSelect,
 }) {
   const mapContainer = useRef(null);
@@ -25,11 +26,23 @@ export function useMapTiler({
       zoom,
     });
 
-    const geocoder = new GeocodingControl();
+    const startGeocoder = new GeocodingControl({
+      placeholder: "Starting location",
+    });
 
-    map.current.addControl(geocoder, "top-left");
+    const destinationGeocoder = new GeocodingControl({
+      placeholder: "Destination",
+    });
 
-    geocoder.on("pick", (event) => {
+    map.current.addControl(startGeocoder, "top-left");
+    map.current.addControl(destinationGeocoder, "top-left");
+
+    startGeocoder.on("pick", (event) => {
+      console.log("Selected start location:", event);
+      onStartLocationSelect?.(event);
+    });
+
+    destinationGeocoder.on("pick", (event) => {
       console.log("Selected destination:", event);
 
       onDestinationSelect?.(event);

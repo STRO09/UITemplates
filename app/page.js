@@ -10,49 +10,59 @@ import "@maptiler/sdk/dist/maptiler-sdk.css";
 const tokyo = [139.753, 35.6844];
 
 export default function Home() {
+  const [startLocation, setStartLocation] = useState(null);
   const [destination, setDestination] = useState(null);
 
   const { location, error } = useCurrentLocation();
   const { route, getRoute } = useRoute();
 
-  const center = location ?? tokyo;
+  const handleStartLocationSelect = useCallback((event) => {
+    if (!event.feature) return;
+    const coordinates = event.feature.center;
+    console.log("Start coordinates:", coordinates);
+    setStartLocation(coordinates);
+  }, []);
+
+  const handleDestinationSelect = useCallback((event) => {
+    if (!event.feature) return;
+    const coordinates = event.feature.center;
+    console.log("Destination coordinates:", coordinates);
+    setDestination(coordinates);
+  }, []);
 
   const { mapContainer, map } = useMapTiler({
-    center: center,
+    center: tokyo,
     zoom: 14,
-    onDestinationSelect: useCallback((event) => {
-      if (!event.feature) return;
-      const coordinates = event.feature.geometry.coordinates[0];
-      console.log("Destination coordinates:", coordinates);
-      setDestination(coordinates);
-    }, []),
+    onStartLocationSelect: handleStartLocationSelect,
+    onDestinationSelect: handleDestinationSelect,
   });
 
   useEffect(() => {
     if (!location) return;
     console.log("Current location:", location);
     console.log("Location error:", error);
+    setStartLocation((current) => current ?? location);
     if (!map.current) return;
 
     map.current.setCenter(location);
-  }, [location, error, map]);
+  }, [location]);
 
   useEffect(() => {
     if (!route || !map.current) return;
     console.log("Drawing route on map:", route);
     drawRoute(map.current, route);
-  }, [route, map]);
+  }, [route]);
 
   useEffect(() => {
-    if (!location || !destination) return;
+    if (!startLocation || !destination) return;
 
     console.log("Fetching route:", {
-      start: location,
+      start: startLocation,
       end: destination,
     });
 
-    getRoute(location, destination);
-  }, [location, destination, getRoute]);
+    getRoute(startLocation, destination);
+  }, [startLocation, destination, getRoute]);
 
   // useEffect(() => {
   //   if (!map.current) return;
