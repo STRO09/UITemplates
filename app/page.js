@@ -1,61 +1,96 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { CompanyPortalLayout } from "@/components/layout/CompanyPortalLayout";
 import { useMapTiler } from "@/hooks/use-MapTiler";
+import { useRoute } from "@/hooks/use-MapRoute";
+import { useCurrentLocation } from "@/hooks/use-currentLocation";
+import { drawRoute } from "@/utils/mapRoute";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
+const tokyo = [139.753, 35.6844];
 
 export default function Home() {
-  const tokyo = [139.753, 35.6844];
+  const [destination, setDestination] = useState(null);
+
+  const { location, error } = useCurrentLocation();
+  const { route, getRoute } = useRoute();
+
+  const center = location ?? tokyo;
 
   const { mapContainer, map } = useMapTiler({
-    center: tokyo,
+    center: center,
     zoom: 14,
+    onDestinationSelect: useCallback((event) => {
+      if (!event.feature) return;
+      const coordinates = event.feature.geometry.coordinates[0];
+      console.log("Destination coordinates:", coordinates);
+      setDestination(coordinates);
+    }, []),
   });
 
   useEffect(() => {
-    map.current.on("load", async () => {
-      const start = [139.6917, 35.6895];
-      const end = [139.7006, 35.6894];
+    if (!location) return;
+    console.log("Current location:", location);
+    console.log("Location error:", error);
+    if (!map.current) return;
 
-      const response = await fetch("/api/routes/openRouteService", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ start, end }),
-      });
+    map.current.setCenter(location);
+  }, [location, error, map]);
 
-      const route = await response.json();
+  useEffect(() => {
+    if (!route || !map.current) return;
+    console.log("Drawing route on map:", route);
+    drawRoute(map.current, route);
+  }, [route, map]);
 
-      map.current.addSource("route", {
-        type: "geojson",
-        data: route,
-      });
+  useEffect(() => {
+    if (!location || !destination) return;
 
-      map.current.addLayer({
-        id: "route",
-        type: "line",
-        source: "route",
-        paint: {
-          "line-color": "#2563eb",
-          "line-width": 6,
-        },
-      });
-
-      if (route.bbox) {
-        map.current.fitBounds(
-          [
-            [route.bbox[0], route.bbox[1]],
-            [route.bbox[2], route.bbox[3]],
-          ],
-          {
-            padding: 50,
-          },
-        );
-      }
+    console.log("Fetching route:", {
+      start: location,
+      end: destination,
     });
-  }, [map]);
+
+    getRoute(location, destination);
+  }, [location, destination, getRoute]);
+
+  // useEffect(() => {
+  //   if (!map.current) return;
+
+  //   map.current.on("load", async () => {
+  //     const start = [139.6917, 35.6895];
+  //     const end = [139.7006, 35.6894];
+
+  //     const route = await getRoute(start, end);
+
+  //     map.current.addSource("route", {
+  //       type: "geojson",
+  //       data: route,
+  //     });
+
+  //     map.current.addLayer({
+  //       id: "route",
+  //       type: "line",
+  //       source: "route",
+  //       paint: {
+  //         "line-color": "#2563eb",
+  //         "line-width": 6,
+  //       },
+  //     });
+
+  //     if (route.bbox) {
+  //       map.current.fitBounds(
+  //         [
+  //           [route.bbox[0], route.bbox[1]],
+  //           [route.bbox[2], route.bbox[3]],
+  //         ],
+  //         {
+  //           padding: 50,
+  //         },
+  //       );
+  //     }
+  //   });
+  // }, [map, getRoute]);
 
   return (
     <CompanyPortalLayout>

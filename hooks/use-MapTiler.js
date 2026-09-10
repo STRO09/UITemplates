@@ -2,10 +2,16 @@
 
 import { useEffect, useRef } from "react";
 import * as maptilersdk from "@maptiler/sdk";
+import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
 
 maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_KEY;
 
-export function useMapTiler({ center, zoom, style = "streets-v4" }) {
+export function useMapTiler({
+  center,
+  zoom,
+  style = "streets-v4",
+  onDestinationSelect,
+}) {
   const mapContainer = useRef(null);
   const map = useRef(null);
 
@@ -19,11 +25,21 @@ export function useMapTiler({ center, zoom, style = "streets-v4" }) {
       zoom,
     });
 
+    const geocoder = new GeocodingControl();
+
+    map.current.addControl(geocoder, "top-left");
+
+    geocoder.on("pick", (event) => {
+      console.log("Selected destination:", event);
+
+      onDestinationSelect?.(event);
+    });
+
     return () => {
       map.current?.remove();
       map.current = null;
     };
-  }, [center, zoom, style]);
+  }, []);
 
   return {
     mapContainer,
