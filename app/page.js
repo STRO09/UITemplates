@@ -6,6 +6,7 @@ import { useMapTiler } from "@/hooks/use-MapTiler";
 import { useRoute } from "@/hooks/use-MapRoute";
 import { useCurrentLocation } from "@/hooks/use-currentLocation";
 import { drawRoute } from "@/utils/mapRoute";
+import { addMarker } from "@/utils/mapMarker";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 const tokyo = [139.753, 35.6844];
 
@@ -52,6 +53,18 @@ export default function Home() {
     console.log("Drawing route on map:", route);
     drawRoute(map.current, route);
   }, [route]);
+
+  useEffect(() => {
+    if (!startLocation || !map.current) return;
+
+    addMarker(map.current, "start", startLocation, "#16a34a");
+  }, [startLocation, map]);
+
+  useEffect(() => {
+    if (!destination || !map.current) return;
+
+    addMarker(map.current, "destination", destination, "#dc2626");
+  }, [destination, map]);
 
   useEffect(() => {
     if (!startLocation || !destination) return;

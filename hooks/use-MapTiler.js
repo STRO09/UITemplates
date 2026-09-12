@@ -36,6 +36,7 @@ export function useMapTiler({
 
     map.current.addControl(startGeocoder, "top-left");
     map.current.addControl(destinationGeocoder, "top-left");
+    
 
     startGeocoder.on("pick", (event) => {
       console.log("Selected start location:", event);

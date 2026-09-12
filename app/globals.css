@@ -321,3 +321,10 @@ h6 {
      text-wrap: balance;
    }
    ========================================================= */
+
+
+   /* for the map dropdown, for the destination search bar to get hidden by start location search dropdown */
+   .maplibregl-ctrl-top-left
+  .maplibregl-ctrl-geocoder:nth-child(2) {
+  z-index: 2 !important;
+}
